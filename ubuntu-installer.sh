@@ -616,8 +616,9 @@ BASHRC_EOF
     echo ""
     # Eğer pipe üzerinden çalışıyorsa başlatma
     if [ "$PIPED_INPUT" = true ]; then
-        start_now="h"
+        start_now="e"
         info "Script tamamlandı. Termux'u kapatıp açtığınızda Ubuntu otomatik başlayacak."
+        info "Ubuntu oturumunda: bash /root/first-setup.sh komutunu çalıştırmayı unutmayın!"
     else
         read -p "Ubuntu'yu şimdi başlatmak ister misiniz? (e/h): " start_now
         if [ "$start_now" = "e" ] || [ "$start_now" = "E" ]; then
@@ -625,6 +626,7 @@ BASHRC_EOF
             exec "$SCRIPT_DIR/start-ubuntu.sh"
         else
             info "Script tamamlandı. Termux'u kapatıp açtığınızda Ubuntu otomatik başlayacak."
+            info "Ubuntu oturumunda: bash /root/first-setup.sh komutunu çalıştırmayı unutmayın!"
         fi
     fi
 else
@@ -646,6 +648,7 @@ else
             exec "$SCRIPT_DIR/start-ubuntu.sh"
         else
             info "Script tamamlandı. İyi çalışmalar!"
+            info "Ubuntu oturumunda: bash /root/first-setup.sh komutunu çalıştırmayı unutmayın!"
             echo ""
             echo -e "${GREEN}Ubuntu'yu başlatmak için:${NC}"
             echo "  ./start-ubuntu.sh"
