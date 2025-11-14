@@ -19,10 +19,18 @@ Termux için otomatik Ubuntu kurulum scripti. Root gerektirmez.
 ## Tek Komutla Kurulum
 
 ```bash
-pkg install -y wget && wget -O - https://raw.githubusercontent.com/ozbilgic/termux-ubuntu-kurulumu/main/ubuntu-installer.sh | bash
+pkg update && pkg upgrade -y && pkg install -y wget && wget -O - https://raw.githubusercontent.com/ozbilgic/termux-ubuntu-kurulumu/main/ubuntu-installer.sh | bash
 ```
 
+**Not:** Tek komutla kurulumda script otomatik modda çalışır:
+- En yeni Ubuntu LTS versiyonu otomatik seçilir
+- İndirme başarısız olursa alternatif versiyonlar otomatik denenir
+- Otomatik başlatma ayarlanmaz (manuel olarak `./start-ubuntu.sh` kullanın)
+- Kullanıcı etkileşimi gerektirmeden kurulum tamamlanır
+
 ## Manuel Kurulum
+
+Manuel kurulumda tüm seçenekler size sorulur ve istediğiniz gibi yapılandırabilirsiniz:
 
 ```bash
 # Script'i indir
@@ -34,6 +42,11 @@ chmod +x ubuntu-installer.sh
 # Kurulumu başlat
 ./ubuntu-installer.sh
 ```
+
+Manuel kurulumda:
+- Ubuntu LTS versiyonunu kendiniz seçersiniz
+- Otomatik başlatma seçeneğini etkinleştirebilirsiniz
+- Ubuntu'yu hemen başlatma veya daha sonra başlatma seçeneği sunulur
 
 ## Kurulum Adımları
 

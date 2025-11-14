@@ -69,10 +69,25 @@ if ! wget --version >/dev/null 2>&1; then
 fi
 info "✓ wget çalışıyor"
 
+# Pipe üzerinden çalışıp çalışmadığını kontrol et (erken tespit için)
+PIPED_INPUT=false
+if [ ! -t 0 ]; then
+    PIPED_INPUT=true
+    warn "Script pipe üzerinden çalıştırılıyor, varsayılan değerler kullanılacak"
+fi
+
 # 3. Mevcut kurulum kontrolü
 if [ -d "$UBUNTU_DIR" ]; then
     warn "Ubuntu kurulumu zaten mevcut: $UBUNTU_DIR"
-    read -p "Mevcut kurulumu silip yeniden kurmak ister misiniz? (e/h): " response
+
+    # Eğer pipe üzerinden çalışıyorsa otomatik olarak sil
+    if [ "$PIPED_INPUT" = true ]; then
+        response="e"
+        info "Varsayılan seçim: Mevcut kurulum silinecek ve yeniden kurulacak"
+    else
+        read -p "Mevcut kurulumu silip yeniden kurmak ister misiniz? (e/h): " response
+    fi
+
     if [ "$response" = "e" ] || [ "$response" = "E" ]; then
         info "Mevcut kurulum siliniyor..."
         rm -rf "$UBUNTU_DIR"
@@ -175,7 +190,14 @@ echo "  2) Ubuntu ${VERSION_2_FULL} LTS"
 echo "  3) Ubuntu ${VERSION_3_FULL} LTS"
 echo "  4) Ubuntu ${VERSION_4_FULL} LTS"
 echo ""
-read -p "Seçiminiz (1, 2, 3 veya 4): " version_choice
+
+# Eğer pipe üzerinden çalışıyorsa varsayılan seçim yap
+if [ "$PIPED_INPUT" = true ]; then
+    version_choice=1
+    info "Varsayılan seçim: Ubuntu ${VERSION_1_FULL} LTS"
+else
+    read -p "Seçiminiz (1, 2, 3 veya 4): " version_choice
+fi
 
 # Seçilen versiyon ve alternatifleri ayarla
 case $version_choice in
@@ -240,7 +262,13 @@ if [ $? -ne 0 ] || [ ! -f ubuntu.tar.gz ] || [ ! -s ubuntu.tar.gz ]; then
     echo "  $((${#ALTERNATIVES[@]}+1))) Kurulumu iptal et"
     echo ""
 
-    read -p "Seçiminiz: " alt_choice
+    # Eğer pipe üzerinden çalışıyorsa otomatik ilk alternatifi dene
+    if [ "$PIPED_INPUT" = true ]; then
+        alt_choice=1
+        info "Varsayılan seçim: İlk alternatif versiyon deneniyor"
+    else
+        read -p "Seçiminiz: " alt_choice
+    fi
 
     # Seçimi kontrol et
     if [ "$alt_choice" -ge 1 ] && [ "$alt_choice" -le "${#ALTERNATIVES[@]}" ] 2>/dev/null; then
@@ -538,7 +566,14 @@ echo ""
 
 # 12. Kullanıcıya otomatik başlatma seçeneği sun
 echo ""
-read -p "Ubuntu'yu Termux'un her açılışında otomatik olarak başlatmak ister misiniz? (Bu seçenek aynı zamanda ubuntu logosu ekler) (e/h): " auto_start
+# Eğer pipe üzerinden çalışıyorsa varsayılan olarak otomatik başlatma yapma
+if [ "$PIPED_INPUT" = true ]; then
+    auto_start="e"
+    info "Varsayılan seçim: Otomatik başlatma."
+else
+    read -p "Ubuntu'yu Termux'un her açılışında otomatik olarak başlatmak ister misiniz? (Bu seçenek aynı zamanda ubuntu logosu ekler) (e/h): " auto_start
+fi
+
 if [ "$auto_start" = "e" ] || [ "$auto_start" = "E" ]; then
     info "Otomatik başlatma ayarı yapılandırılıyor..."
 
@@ -579,26 +614,41 @@ BASHRC_EOF
 
     # Şimdi başlat
     echo ""
-    read -p "Ubuntu'yu şimdi başlatmak ister misiniz? (e/h): " start_now
-    if [ "$start_now" = "e" ] || [ "$start_now" = "E" ]; then
-        info "Ubuntu başlatılıyor..."
-        exec "$SCRIPT_DIR/start-ubuntu.sh"
-    else
+    # Eğer pipe üzerinden çalışıyorsa başlatma
+    if [ "$PIPED_INPUT" = true ]; then
+        start_now="h"
         info "Script tamamlandı. Termux'u kapatıp açtığınızda Ubuntu otomatik başlayacak."
+    else
+        read -p "Ubuntu'yu şimdi başlatmak ister misiniz? (e/h): " start_now
+        if [ "$start_now" = "e" ] || [ "$start_now" = "E" ]; then
+            info "Ubuntu başlatılıyor..."
+            exec "$SCRIPT_DIR/start-ubuntu.sh"
+        else
+            info "Script tamamlandı. Termux'u kapatıp açtığınızda Ubuntu otomatik başlayacak."
+        fi
     fi
 else
     info "Otomatik başlatma ayarlanmadı"
 
     # 13. Kullanıcıya Ubuntu'yu başlatma seçeneği sun
     echo ""
-    read -p "Ubuntu'yu şimdi başlatmak ister misiniz? (e/h): " start_ubuntu
-    if [ "$start_ubuntu" = "e" ] || [ "$start_ubuntu" = "E" ]; then
-        info "Ubuntu başlatılıyor..."
-        exec "$SCRIPT_DIR/start-ubuntu.sh"
-    else
+    # Eğer pipe üzerinden çalışıyorsa başlatma
+    if [ "$PIPED_INPUT" = true ]; then
+        start_ubuntu="h"
         info "Script tamamlandı. İyi çalışmalar!"
         echo ""
         echo -e "${GREEN}Ubuntu'yu başlatmak için:${NC}"
         echo "  ./start-ubuntu.sh"
+    else
+        read -p "Ubuntu'yu şimdi başlatmak ister misiniz? (e/h): " start_ubuntu
+        if [ "$start_ubuntu" = "e" ] || [ "$start_ubuntu" = "E" ]; then
+            info "Ubuntu başlatılıyor..."
+            exec "$SCRIPT_DIR/start-ubuntu.sh"
+        else
+            info "Script tamamlandı. İyi çalışmalar!"
+            echo ""
+            echo -e "${GREEN}Ubuntu'yu başlatmak için:${NC}"
+            echo "  ./start-ubuntu.sh"
+        fi
     fi
 fi
