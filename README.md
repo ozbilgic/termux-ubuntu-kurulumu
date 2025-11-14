@@ -25,7 +25,7 @@ pkg update && pkg upgrade -y && pkg install -y wget && wget -O - https://raw.git
 **Not:** Tek komutla kurulumda script otomatik modda çalışır:
 - En yeni Ubuntu LTS versiyonu otomatik seçilir
 - İndirme başarısız olursa alternatif versiyonlar otomatik denenir
-- Otomatik başlatma ayarlanmaz (manuel olarak `./start-ubuntu.sh` kullanın)
+- Otomatik başlatma ayarlanır
 - Kullanıcı etkileşimi gerektirmeden kurulum tamamlanır
 
 ## Manuel Kurulum
